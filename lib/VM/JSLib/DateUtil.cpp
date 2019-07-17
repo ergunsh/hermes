@@ -544,6 +544,50 @@ void timeToString(double t, double tza, llvm::SmallVectorImpl<char> &buf) {
   }
 }
 
+void dateToReadableString(double t, double, llvm::SmallVectorImpl<char> &buf) {
+  llvm::raw_svector_ostream os{buf};
+
+  /// Make these ints here because we're printing and we have bounds on
+  /// their values. Makes printing very easy.
+  int32_t y = yearFromTime(t);
+  int32_t m = monthFromTime(t);
+  int32_t d = dateFromTime(t);
+  int32_t wd = weekDay(t);
+
+  if (y < 0 || y > 9999) {
+    // Handle extended years.
+    os << llvm::format("%s %s %02d %+07d", kShortWeekDays[wd], kShortMonths[m], d, y);
+  } else {
+    os << llvm::format("%s %s %02d %04d", kShortWeekDays[wd], kShortMonths[m], d, y);
+  }
+}
+
+void timeToReadableString(double t, double tza, llvm::SmallVectorImpl<char> &buf) {
+  llvm::raw_svector_ostream os{buf};
+
+  /// Make all of these ints here because we're printing and we have bounds on
+  /// their values. Makes printing very easy.
+  int32_t h = hourFromTime(t);
+  int32_t min = minFromTime(t);
+  int32_t s = secFromTime(t);
+  int32_t ms = msFromTime(t);
+
+  if (tza == 0) {
+    // Zulu time, output Z as the time zone.
+    os << llvm::format("%02d:%02d:%02dZ", h, min, s, ms);
+  } else {
+    // Calculate the +HH:mm expression for the time zone adjustment.
+    // First account for the sign, then perform calculations on positive TZA.
+    char sign = tza >= 0 ? '+' : '-';
+    double tzaPos = std::abs(tza);
+
+    int32_t tzh = hourFromTime(tzaPos);
+    int32_t tzm = minFromTime(tzaPos);
+    os << llvm::format(
+        "%02d:%02d:%02d GMT%c%02d%02d", h, min, s, sign, tzh, tzm);
+  }
+}
+
 static void datetimeToString(
     double t,
     double tza,
@@ -552,6 +596,15 @@ static void datetimeToString(
   dateToString(t, tza, buf);
   buf.push_back(separator);
   timeToString(t, tza, buf);
+}
+
+void datetimeToReadableString(
+  double t,
+  double tza,
+  llvm::SmallVectorImpl<char> &buf) {
+  dateToReadableString(t, tza, buf);
+  buf.push_back(' ');
+  timeToReadableString(t, tza, buf);
 }
 
 void datetimeToISOString(

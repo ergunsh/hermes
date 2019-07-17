@@ -140,9 +140,9 @@ struct GetterOptions {
 };
 } // namespace
 
-static ToStringOptions optDatetimeToString{datetimeToISOString, false, false};
-static ToStringOptions optDateToString{dateToString, false, false};
-static ToStringOptions optTimeToString{timeToString, false, false};
+static ToStringOptions optDatetimeToString{datetimeToReadableString, false, false};
+static ToStringOptions optDateToString{dateToReadableString, false, false};
+static ToStringOptions optTimeToString{timeToReadableString, false, false};
 static ToStringOptions optISOToString{datetimeToISOString, true, true};
 static ToStringOptions optUTCToString{datetimeToUTCString, true, false};
 

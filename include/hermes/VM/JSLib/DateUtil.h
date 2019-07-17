@@ -40,6 +40,9 @@ constexpr double MS_PER_MINUTE = MS_PER_SECOND * SECONDS_PER_MINUTE;
 constexpr double MS_PER_HOUR = MS_PER_MINUTE * MINUTES_PER_HOUR;
 constexpr double MS_PER_DAY = MS_PER_HOUR * HOURS_PER_DAY;
 
+constexpr char* kShortWeekDays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+constexpr char* kShortMonths[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
 //===----------------------------------------------------------------------===//
 // Current time
 
@@ -184,6 +187,27 @@ void dateToString(double t, double tza, llvm::SmallVectorImpl<char> &buf);
 /// \param tza time zone adjustment in milliseconds, used for the TZ.
 /// \param buf the buffer to be populated with the resultant string.
 void timeToString(double t, double tza, llvm::SmallVectorImpl<char> &buf);
+
+/// Creates a readable format date string.
+/// The string is of the format E M d y. Where E is day name in week, M is month name, d is day in month, and y is year.
+/// \param t timestamp in milliseconds since Jan 1 1970.
+/// \param tza unused, placed for compatibility with the other toStrings.
+/// \param buf the buffer to be populated with the resultant string.
+void dateToReadableString(double t, double tza, llvm::SmallVectorImpl<char> &buf);
+
+/// Creates a readable format time string.
+/// The string is of the format HH:mm:ss GMTZ where Z is timezone offset.
+/// \param t timestamp in milliseconds since Jan 1 1970.
+/// \param tza unused, placed for compatibility with the other toStrings.
+/// \param buf the buffer to be populated with the resultant string.
+void timeToReadableString(double t, double tza, llvm::SmallVectorImpl<char> &buf);
+
+/// Creates a readable format date time string.
+/// The string is of the format "E M d y HH:mm:ss GMTZ" where Z is timezone.
+/// \param t timestamp in milliseconds since Jan 1 1970.
+/// \param tza time zone adjustment in milliseconds, used for the TZ.
+/// \param buf the buffer to be populated with the resultant string.
+void datetimeToReadableString(double t, double tza, llvm::SmallVectorImpl<char> &buf);
 
 /// Creates an ISO 8601 format string, in the provided timezone.
 /// The string is of the format YYYY-MM-DDTHH:mm:ss.sssZ where Z is timezone.
